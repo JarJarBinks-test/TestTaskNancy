@@ -11,19 +11,19 @@ namespace TestTaskNancy.Services
 {
     public class StoryService : IStoryService
     {
-        readonly ILogger<StoryService> loger;
+        readonly ILogger<IStoryService> logger;
         readonly String outputGroupedByDataFormat = "yyyy-MM-dd";
         readonly IServiceProvider serviceProvider;
 
-        public StoryService(IServiceProvider serviceProvider)
+        public StoryService(ILogger<IStoryService> logger, IServiceProvider serviceProvider)
         {
-            loger = serviceProvider.GetService<ILoggerFactory>().CreateLogger<StoryService>();
+            this.logger = logger;
             this.serviceProvider = serviceProvider;
         }
 
         public async Task<List<ArticleGroupByDateView>> GetGroupedStoriesByDate(StoriesSourceEnum source, String section)
         {
-            loger.LogInformation($"{nameof(GetGroupedStoriesByDate)}. {nameof(source)}:{source}, {nameof(section)}:{section}");
+            logger.LogInformation($"{nameof(GetGroupedStoriesByDate)}. {nameof(source)}:{source}, {nameof(section)}:{section}");
 
             var stories = await GetStoriesList(source, section);
             var groupedResult = stories.GroupBy(x => x.Updated.Date).ToList();
@@ -38,7 +38,7 @@ namespace TestTaskNancy.Services
         public async Task<List<ArticleView>> GetStoriesList(StoriesSourceEnum source, String section, Int32? topCount, 
             DateTime? dateFilter, String shortUrlFilter)
         {
-            loger.LogInformation($@"{nameof(GetStoriesList)}. {nameof(source)}:{source}, {nameof(section)}:{section}, {
+            logger.LogInformation($@"{nameof(GetStoriesList)}. {nameof(source)}:{source}, {nameof(section)}:{section}, {
                 nameof(topCount)}:{topCount}, {nameof(dateFilter)}:{dateFilter}, {nameof(shortUrlFilter)}:{shortUrlFilter}");
 
             var stories = await GetStoriesList(source, section);

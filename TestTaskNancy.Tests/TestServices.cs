@@ -18,6 +18,7 @@ namespace TestTaskNancy.Tests
     {
         Mock<IServiceProvider> serviceProvider;
         Mock<INytimesSourceService> sourceService;
+        Mock<ILoggerFactory> iLoggerFactory;
 
         [TestInitialize]
         public void Setup()
@@ -28,8 +29,8 @@ namespace TestTaskNancy.Tests
             var mockIConfiguration = new Mock<IConfiguration>();
             mockIConfiguration.Setup(c => c.GetSection(It.IsAny<String>())).Returns(mockIConfigurationSection.Object);
 
-            var mqILoggerFactory = new Mock<ILoggerFactory>();
-            mqILoggerFactory
+            iLoggerFactory = new Mock<ILoggerFactory>();
+            iLoggerFactory
                 .Setup(x => x.CreateLogger(It.IsAny<String>()))
                 .Returns(new Mock<ILogger>().Object);
 
@@ -38,7 +39,7 @@ namespace TestTaskNancy.Tests
             serviceProvider = new Mock<IServiceProvider>();
             serviceProvider
                 .Setup(x => x.GetService(typeof(ILoggerFactory)))
-                .Returns(mqILoggerFactory.Object);
+                .Returns(iLoggerFactory.Object);
 
             serviceProvider
                 .Setup(x => x.GetService(typeof(INytimesSourceService)))
@@ -96,9 +97,7 @@ namespace TestTaskNancy.Tests
                     Updated = currDate.AddDays(-4),
                 }
             };
-            var storyService = new StoryService(serviceProvider.Object);
-            //sourceService.Setup(nt => nt.GetRawStories(section)).Returns(Task.Run(() => 
-            //    "{\"results\": [{\"title\":\"title\", \"updated_date\": \"2020-07-26T09:21:19-04:00\", \"short_url\",\"https://nyti.ms/2OZOvs8\"}] }"));
+            var storyService = new StoryService(iLoggerFactory.Object.CreateLogger<IStoryService>(), serviceProvider.Object);
 
             sourceService.Setup(nt => nt.GetStoriesList(section)).Returns(Task.Run(() => articles));
 
@@ -122,7 +121,7 @@ namespace TestTaskNancy.Tests
         {
             // Arrange
             var section = "home";
-            var storyService = new StoryService(serviceProvider.Object);
+            var storyService = new StoryService(iLoggerFactory.Object.CreateLogger<IStoryService>(), serviceProvider.Object);
 
             sourceService.Setup(nt => nt.GetStoriesList(section)).Returns(Task.Run(() => new List<ArticleView>()));
 
@@ -163,7 +162,7 @@ namespace TestTaskNancy.Tests
                     Updated = currDate.AddDays(-6),
                 }
             };
-            var storyService = new StoryService(serviceProvider.Object);
+            var storyService = new StoryService(iLoggerFactory.Object.CreateLogger<IStoryService>(), serviceProvider.Object);
             sourceService.Setup(nt => nt.GetStoriesList(section)).Returns(Task.Run(() => articles));
 
             // Actions

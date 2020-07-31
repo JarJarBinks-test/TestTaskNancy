@@ -3,7 +3,6 @@ using Nancy;
 using System;
 using System.Linq;
 using TestTaskNancy.Services;
-using Microsoft.Extensions.DependencyInjection;
 
 namespace TestTaskNancy
 {
@@ -13,11 +12,8 @@ namespace TestTaskNancy
         readonly String headerSourceName = "ForSource";
         readonly String homeSection = "home";
         readonly StoriesSourceEnum defaultSource = StoriesSourceEnum.Nytimes;
-        public StoriesModule(IServiceProvider serviceProvider)
+        public StoriesModule(IStoryService storyService, ILogger<StoriesModule> logger)
         {
-            var storyService = serviceProvider.GetService<IStoryService>();
-            var loger = serviceProvider.GetService<ILoggerFactory>().CreateLogger<StoriesModule>();
-
             StoriesSourceEnum GetSourceOrDefault() => 
                 Enum.TryParse<StoriesSourceEnum>(Request.Headers[headerSourceName].FirstOrDefault(), out StoriesSourceEnum res) ? 
                     res : defaultSource;
@@ -46,20 +42,20 @@ namespace TestTaskNancy
 
 
             Before += (ctx) => {
-                loger.LogInformation($"Request: {ctx.Request.Url}");
+                logger.LogInformation($"Request: {ctx.Request.Url}");
 
                 return null;
             };
 
             OnError += (ctx, ex) => {
-                loger.LogError(ex.Message);
+                logger.LogError(ex.Message);
 
                 return HttpStatusCode.InternalServerError;
             };
 
             After += ctx =>
             {
-                loger.LogDebug($"Response data: {ctx.Response}");
+                logger.LogDebug($"Response data: {ctx.Response}");
             };
         }
     }

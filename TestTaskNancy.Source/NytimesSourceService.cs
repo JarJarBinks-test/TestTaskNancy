@@ -5,7 +5,6 @@ using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using TestTaskNancy.Contracts;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 
@@ -15,11 +14,11 @@ namespace TestTaskNancy.Sources
     {
         readonly String apiKey;
         readonly String serviceDateFormat = "yyyy-MM-ddTHH:mm:sszzz";
-        readonly ILogger<NytimesSourceService> logger;
-        public NytimesSourceService(IServiceProvider serviceProvider)
+        readonly ILogger<INytimesSourceService> logger;
+        public NytimesSourceService(IConfiguration configuration, ILogger<INytimesSourceService> logger)
         {
-            apiKey = serviceProvider.GetService<IConfiguration>().GetValue<String>("NytimesApiKey");
-            logger = serviceProvider.GetService<ILoggerFactory>().CreateLogger<NytimesSourceService>();
+            apiKey = configuration.GetValue<String>("NytimesApiKey");
+            this.logger = logger;
         }
 
         public async Task<String> GetRawStories(String section)

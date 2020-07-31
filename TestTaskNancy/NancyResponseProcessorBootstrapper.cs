@@ -5,6 +5,7 @@ using Nancy.Responses.Negotiation;
 using Nancy.TinyIoc;
 using System;
 using System.Linq;
+using TestTaskNancy.Services;
 
 namespace TestTaskNancy
 {
@@ -21,7 +22,9 @@ namespace TestTaskNancy
         {
             base.ConfigureApplicationContainer(container);
 
-            container.Register(typeof(IServiceProvider), _serviceProvider);            
+            container.Register(typeof(IStoryService), (c, p) => _serviceProvider.GetService(typeof(IStoryService)));
+            container.Register(typeof(ILogger<StoriesModule>), (c, p) => 
+                ((ILoggerFactory)_serviceProvider.GetService(typeof(ILoggerFactory))).CreateLogger<StoriesModule>());
         }
 
         protected override Func<ITypeCatalog, NancyInternalConfiguration> InternalConfiguration
