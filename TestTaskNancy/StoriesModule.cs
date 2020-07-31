@@ -14,6 +14,11 @@ namespace TestTaskNancy
         readonly StoriesSourceEnum defaultSource = StoriesSourceEnum.Nytimes;
         public StoriesModule(IStoryService storyService, ILogger<StoriesModule> logger)
         {
+            if(storyService == null) 
+                throw new ArgumentNullException($"{nameof(storyService)} is null.");
+            if (logger == null)
+                throw new ArgumentNullException($"{nameof(logger)} is null.");
+
             StoriesSourceEnum GetSourceOrDefault() => 
                 Enum.TryParse<StoriesSourceEnum>(Request.Headers[headerSourceName].FirstOrDefault(), out StoriesSourceEnum res) ? 
                     res : defaultSource;

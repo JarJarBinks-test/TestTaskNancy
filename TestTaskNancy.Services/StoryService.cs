@@ -17,8 +17,8 @@ namespace TestTaskNancy.Services
 
         public StoryService(ILogger<IStoryService> logger, IServiceProvider serviceProvider)
         {
-            this.logger = logger;
-            this.serviceProvider = serviceProvider;
+            this.logger = logger ?? throw new ArgumentNullException($"{nameof(logger)} is null.");
+            this.serviceProvider = serviceProvider ?? throw new ArgumentNullException($"{nameof(serviceProvider)} is null.");
         }
 
         public async Task<List<ArticleGroupByDateView>> GetGroupedStoriesByDate(StoriesSourceEnum source, String section)

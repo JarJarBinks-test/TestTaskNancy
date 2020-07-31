@@ -17,8 +17,11 @@ namespace TestTaskNancy.Sources
         readonly ILogger<INytimesSourceService> logger;
         public NytimesSourceService(IConfiguration configuration, ILogger<INytimesSourceService> logger)
         {
+            if (configuration == null)
+                throw new ArgumentNullException($"{nameof(configuration)} is null.");
+            
             apiKey = configuration.GetValue<String>("NytimesApiKey");
-            this.logger = logger;
+            this.logger = logger ?? throw new ArgumentNullException($"{nameof(logger)} is null."); ;
         }
 
         public async Task<String> GetRawStories(String section)
